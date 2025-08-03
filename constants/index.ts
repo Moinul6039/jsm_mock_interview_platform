@@ -204,7 +204,42 @@ export const mappings = {
   "/yahoo.png",
  ];
 
- export const dummyInterviews: Interview[] = 
+ // Type definitions
+export type FormType = "sign-in" | "sign-up";
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  profileURL?: string;
+  resumeURL?: string;
+}
+
+export interface SignUpParams {
+  uid: string;
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface SignInParams {
+  email: string;
+  idToken: string;
+}
+
+export interface Interview {
+  id: string;
+  userId: string;
+  role: string;
+  type: string;
+  techstack: string[];
+  level: string;
+  questions: string[];
+  finalized: boolean;
+  createdAt: string;
+}
+
+export const dummyInterviews: Interview[] = 
  [
    {
      id: "1",
@@ -229,3 +264,33 @@ export const mappings = {
     createdAt: "2024-03-14T15:30:00Z",
   },
 ];
+
+// Additional type definitions
+export interface InterviewCardProps {
+  interviewId: string;
+  userId: string;
+  role: string;
+  type: string;
+  techstack: string[];
+  createdAt: string;
+}
+
+export interface TechIconProps {
+  techStack: string[];
+}
+
+export interface Feedback {
+  id: string;
+  interviewId: string;
+  userId: string;
+  totalScore: number;
+  categoryScores: {
+    name: string;
+    score: number;
+    comment: string;
+  }[];
+  strengths: string[];
+  areasForImprovement: string[];
+  finalAssessment: string;
+  createdAt: string;
+}

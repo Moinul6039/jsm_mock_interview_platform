@@ -19,9 +19,11 @@ const page = () => {
         <Button asChild className="btn-primary max-sm:w-full">
           <Link href="/interview">Start an Interview</Link>
         </Button>
-        <Image src="/robot.png" alt="robot" width={400} height={400} className="max-sm:hidden" />
+      </div>
+      <div className="flex items-center justify-center">
+      <img src="/robot.png" alt="robot" width="300" height="300" />
 
-      </div>      
+      </div>
     </section>
     <section className="flex flex-col gap-6 mt-8">
       
@@ -30,7 +32,15 @@ const page = () => {
       </h2>
       <div className="interview-section">
        {dummyInterviews.map((interview) => (
-        <InterviewCard {...interview} key = {interview.id}/>
+        <InterviewCard 
+          interviewId={interview.id}
+          userId={interview.userId}
+          role={interview.role}
+          type={interview.type}
+          techstack={interview.techstack}
+          createdAt={interview.createdAt}
+          key={interview.id}
+        />
        ))}
       
       </div>
@@ -39,7 +49,15 @@ const page = () => {
       <h2>Take an Interview</h2>
       <div className="interview-section">
       {dummyInterviews.map((interview) => (
-        <InterviewCard {...interview} key = {interview.id}/>
+        <InterviewCard 
+          interviewId={interview.id}
+          userId={interview.userId}
+          role={interview.role}
+          type={interview.type}
+          techstack={interview.techstack}
+          createdAt={interview.createdAt}
+          key={interview.id}
+        />
        ))}
        <p>You haven&apos;t taken any interview yet</p>
 

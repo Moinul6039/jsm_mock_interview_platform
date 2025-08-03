@@ -4,23 +4,26 @@ import { z } from "zod";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
-//import { auth } from "@/firebase/client";
+import { auth } from "@/firebase/client";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-//import {
-//  createUserWithEmailAndPassword,
-//  signInWithEmailAndPassword,
-//} from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { FirebaseError } from "firebase/app";
 
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 
-//import { signIn, signUp } from "@/lib/actions/auth.action";
+import { signIn, signUp } from "@/lib/actions/auth.action";
 import FormField from "./FormFiled";
+import { FormType } from "@/constants";
 
 const authFormSchema = (type: FormType) => {
+  
   return z.object({
     name: type === "sign-up" ? z.string().min(3) : z.string().optional(),
     email: z.string().email(),
@@ -29,7 +32,7 @@ const authFormSchema = (type: FormType) => {
 };
 
 const AuthForm = ({ type }: { type: FormType }) => {
-  const router = useRouter();
+  // const router = useRouter();
 
   const formSchema = authFormSchema(type);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -64,8 +67,25 @@ const AuthForm = ({ type }: { type: FormType }) => {
           return;
         }
 
-        toast.success("Account created successfully. Please sign in.");
-        router.push("/sign-in");
+        // After successful sign up, automatically sign in
+        try {
+          const signInResult = await signIn({
+            email,
+            idToken: await userCredential.user.getIdToken(),
+          });
+
+          if (signInResult.success) {
+            toast.success("Account created and signed in successfully!");
+            window.location.href = "/";
+          } else {
+            toast.success("Account created successfully. Please sign in.");
+            window.location.href = "/sign-in";
+          }
+        } catch (error) {
+          console.error("Auto sign-in error:", error);
+          toast.success("Account created successfully. Please sign in.");
+          window.location.href = "/sign-in";
+        }
       } else {
         const { email, password } = data;
 
@@ -81,17 +101,48 @@ const AuthForm = ({ type }: { type: FormType }) => {
           return;
         }
 
-        await signIn({
+        const result = await signIn({
           email,
           idToken,
         });
 
+        if (!result.success) {
+          toast.error(result.message);
+          return;
+        }
+
         toast.success("Signed in successfully.");
-        router.push("/");
+        window.location.href = "/";
       }
     } catch (error) {
       console.log(error);
-      toast.error(`There was an error: ${error}`);
+      
+      if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case "auth/email-already-in-use":
+            toast.error("This email is already registered. Please sign in instead.");
+            break;
+          case "auth/invalid-email":
+            toast.error("Invalid email address. Please check your email.");
+            break;
+          case "auth/weak-password":
+            toast.error("Password is too weak. Please choose a stronger password.");
+            break;
+          case "auth/user-not-found":
+            toast.error("No account found with this email. Please sign up.");
+            break;
+          case "auth/wrong-password":
+            toast.error("Incorrect password. Please try again.");
+            break;
+          case "auth/too-many-requests":
+            toast.error("Too many failed attempts. Please try again later.");
+            break;
+          default:
+            toast.error(`Authentication error: ${error.message}`);
+        }
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     }
   };
 
