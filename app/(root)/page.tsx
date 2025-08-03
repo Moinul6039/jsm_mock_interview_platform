@@ -20,9 +20,25 @@ const page = () => {
           <Link href="/interview">Start an Interview</Link>
         </Button>
       </div>
-      <div className="flex items-center justify-center">
-      <img src="/robot.png" alt="robot" width="300" height="300" />
-
+      <div className="flex items-center justify-center max-sm:hidden">
+        <Image 
+          src="/robot.png" 
+          alt="AI Robot Assistant" 
+          width={500} 
+          height={500}
+          className="object-contain max-w-[400px] max-h-[400px]"
+          priority
+        />
+      </div>
+      <div className="flex items-center justify-center sm:hidden">
+        <Image 
+          src="/robot.png" 
+          alt="AI Robot Assistant" 
+          width={300} 
+          height={300}
+          className="object-contain max-w-[250px] max-h-[250px]"
+          priority
+        />
       </div>
     </section>
     <section className="flex flex-col gap-6 mt-8">

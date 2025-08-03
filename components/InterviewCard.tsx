@@ -58,7 +58,7 @@ const InterviewCard = async ({
             alt="cover-image"
             width={90}
             height={90}
-            className="rounded-full object-fit size-[90px]"
+            className="rounded-full object-cover size-[90px]"
           />
 
           {/* Interview Role */}
